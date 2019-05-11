@@ -12,13 +12,12 @@ import ru.otus.casino.repository.PlayerRepository;
 @IntegrationComponentScan
 @EnableIntegration
 public class CasinoApplication {
-
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext ctx = SpringApplication.run(CasinoApplication.class, args);
         Casino casino = ctx.getBean(Casino.class);
         PlayerRepository playerRepository = ctx.getBean(PlayerRepository.class);
         playerRepository.save(new Player("Первый игрок", "red"));
-
+//
         while (true) {
             Thread.sleep(5000);
             playerRepository.findAll().forEach(player -> {
