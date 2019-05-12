@@ -1,6 +1,7 @@
 package ru.otus.casino.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
@@ -8,11 +9,17 @@ import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.scheduling.PollerMetadata;
-import org.springframework.stereotype.Component;
 import ru.otus.casino.domain.Player;
+import ru.otus.casino.service.RollService;
+import ru.otus.casino.service.RollServiceImp;
 
-@Component
+@Configuration
 public class PlayerIntegration {
+
+    @Bean
+    public RollService rollService(){
+        return new RollServiceImp();
+    }
 
     @Bean
     public QueueChannel playersChannel() {
@@ -21,7 +28,7 @@ public class PlayerIntegration {
 
     @Bean
     public PublishSubscribeChannel resultChannel() {
-        return MessageChannels.publishSubscribe().datatype(Boolean.class).get();
+        return MessageChannels.publishSubscribe().get();
     }
 
     @Bean (name = PollerMetadata.DEFAULT_POLLER )
@@ -32,7 +39,7 @@ public class PlayerIntegration {
     @Bean
     public IntegrationFlow casinoFlow() {
         return IntegrationFlows.from("playersChannel")
-                .handle("casinoService", "spinRoulette")
+                .handle("casinoServiceImp", "spinRoulette")
                 .channel("resultChannel")
                 .get();
     }
